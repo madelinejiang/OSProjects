@@ -1,0 +1,17 @@
+Synchronization in the swap function:
+Overall, I used 3 semaphores. To ensure parallelism, the swapping data portion of the void *swap function was not encapsulated with semaphores. Subsequently using semaphore1 as a mutex, the number of threads passing this point will increment variable thread_counter. Once all threads have passed, this will allow all threads to pass the first barrier (sem_wait(&semaphore)). Then again using the mutex, thread_counter is decremented by each thread until all threads have passed, which will then trigger the posting to the second barrier controlled by semaphore2. Via this design, if the last thread that triggers the sem_post function within the mutex is switched out, the threads that did pass through one barrier will be stopped by the second barrier until the last thread has finished.
+semaphore and semaphore2 were initialized to 0 as barriers. semaphore1 was initialized to 1 as a mutex.
+Other design notes:
+Functions:
+void error-obtained from previous project’s example, to display error message and preemptively exit the system
+void *swap- swapping function called by each thread to implement the balanced sort
+void set_semaphore_values-this function opens sema.init if it exists and reads their values into a float array sem_values[]. The program will exit if sema.init is not found.
+void scan_file()-stores the contents of the input file as integers into a dynamic array(type vector) file_contents if file_name is found. The program will exit if the file is not found.
+void ischar()-error checking to ensure that the input file from the user only contains integers. Allowed ascii characters are the numbers 0-9, -(minus sign), newline and carriage return. The program will exit if it detects an invalid character.
+void make_numbers()-clears the previous array of numbers sorted and transfers the values of vector file_contents to vector numbers up to the value specified at index 0 in file_contents. 
+Other notes:
+num_of_stages and num_of_phases were defined as log base 2 N.
+oflag is set to 1 if in observation mode and 0 if in regular mode. The user input for the mode “-o” or “-r” is stored in char* mode in order to determine oflag correctly in main.
+
+I defined the maximum number of threads for my program to be 512. The true maximum number of threads for any process varies across different systems, and I wanted to establish portability by hardcoding a value.
+ 
